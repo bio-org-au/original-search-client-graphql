@@ -1,0 +1,58 @@
+<h1>Name Search</h1>
+
+<%= render partial: 'name_form' %>
+<hr>
+
+<div id="search-results">
+<% if @results.present? %>
+  <%= pluralize(@results.size,'name') %>
+  found for "<%= @search_term %>"
+  <% elapsed = Time.now - @start_time %>(<%= elapsed %>s)
+
+  <hr>
+
+  <ul class="plain">
+  <% @results.names.each do |name| %>
+    <li>[family]
+      <%= name.full_name %>
+      <%= name.name_status_name %>
+
+      <% if @show_details %>
+        <br>
+        <%= name.usages.size %>
+      <p>
+      <ul class="plain indent3">
+        <% name.usages.each do |usage| %>
+          <br>
+          <% if usage.misapplied? %>
+            <li><%= usage.full_citation_without_page %>
+            <ul class="plain indent3 synonyms">
+            <li>misapplied to: <%= usage.misapplied_to_name %>
+            </ul>
+            <%#= "<pre>#{usage.to_yaml}</pre>".html_safe if usage.instance_type_name == 'misapplied' %>
+          <% else %>
+            <li><%= usage.full_citation_with_page %>
+          <% end %>
+          <ul class="plain indent3 synonyms">
+          <% usage.synonyms.each do |synonym| %>
+            <br>
+            synonym
+            <li><span class="synonym-type"><%= synonym.label %>:</span>
+              <%= synonym.full_name %><%= ": #{synonym.page}" unless synonym.page.blank? %>
+          <% end %>
+          </ul>
+        <% end %>
+      </ul>
+    </p>
+    <% end %>
+  <% end %>
+  </ul>
+  <hr>
+  <% elapsed = Time.now - @start_time %>
+  <%= elapsed %> seconds (~<%= (@search.data.name_search.names.size/elapsed).round %> records/second) (index.html)
+
+<pre>
+<%#= simple_format @search.to_yaml %>
+</pre>
+<% end %>
+</div>

@@ -1,0 +1,151 @@
+# frozen_string_literal: true
+
+# Controller
+# Run a search
+# Display a search form
+# Run a search using the search term supplied
+# Trim trailing spaces from the search term
+# Form a request to the Graphql server
+# Modify the request based on form fields for: 
+# - list/details (ToDo)
+# - auto wildcards/exact search (ToDo)
+# - output format (ToDo)
+# urlencode the search term
+# Handle html format
+# Handle json format
+# ToDo: handle csv format
+# Show useful error diagnostics
+# - in log
+# - on page
+class SearchController < ApplicationController
+  def index
+    @show_details = false
+    search
+    respond_to do |format|
+      format.html { @results = Results.new(@search); render }
+      format.json { render json: @search }
+      format.csv  { logger.debug("format.csv") }
+    end
+  #rescue => e
+  #  logger.error("Search error #{e} for params: #{params.inspect}")
+  #  logger.error(@search.to_yaml)
+  #  render :error
+  end
+
+  private
+
+  def search
+    @search = nil
+    raise 'search error' if @search.present? && @search.data.nil?
+    if search_params['q'].present?
+      @search_term = search_params[:q].gsub(/ *$/, '')
+      @type_of_name = search_params[:name_type]
+      @fuzzy_or_exact = search_params[:fuzzy_or_exact]
+      @limit = search_params[:limit]
+      if search_params[:list_or_detail] == "detail"
+        @show_details = true
+        request = "#{DATA_SERVER}/v1?query=#{detail_query}"
+      else
+        @show_details = false
+        request = "#{DATA_SERVER}/v1?query=#{list_query}"
+      end
+      json = HTTParty.get(request).to_json
+      @search = JSON.parse(json, object_class: OpenStruct)
+    end
+  end
+
+  def list_query
+    list_query_raw.delete(' ')
+                  .delete("\n")
+                  .sub(/search_term_placeholder/, URI.escape(@search_term))
+                  .sub(/type_of_name_placeholder/, URI.escape(@type_of_name))
+                  .sub(/fuzzy_or_exact_placeholder/, URI.escape(@fuzzy_or_exact))
+                  .sub(/"limit_placeholder"/, URI.escape(@limit))
+  end
+
+  def list_query_raw
+    <<~HEREDOC
+      {
+        name_search(search_term: "search_term_placeholder",
+                    type_of_name: "type_of_name_placeholder",
+                    fuzzy_or_exact: "fuzzy_or_exact_placeholder",
+                    limit: "limit_placeholder")
+          {
+            names
+            {
+              id,
+              full_name,
+              name_status_name
+            }
+          }
+      }
+    HEREDOC
+  end
+
+  def detail_query
+    detail_query_raw.delete(' ')
+                    .delete("\n")
+                    .sub(/search_term_placeholder/, URI.escape(@search_term))
+                    .sub(/type_of_name_placeholder/, URI.escape(@type_of_name))
+                    .sub(/fuzzy_or_exact_placeholder/, URI.escape(@fuzzy_or_exact))
+                    .sub(/"limit_placeholder"/, URI.escape(@limit))
+  end
+
+  def detail_query_raw
+    <<~HEREDOC
+    {
+      name_search(search_term: "search_term_placeholder",
+                  type_of_name: "type_of_name_placeholder",
+                  fuzzy_or_exact: "fuzzy_or_exact_placeholder",
+                  limit: "limit_placeholder")
+      {
+        names
+        {
+          id,
+          simple_name,
+          full_name,
+          full_name_html,
+          name_status_name,
+          name_history
+          {
+            name_usages
+            {
+              instance_id,
+              reference_id,
+              citation,
+              page,
+              page_qualifier,
+              year,
+              standalone,
+              instance_type_name,
+              primary_instance,
+              misapplied,
+              misapplied_to_name,
+              misapplied_to_id,
+              misapplied_by_id,
+              misapplied_by_citation,
+              misapplied_on_page,
+              synonyms {
+                id,
+                full_name,
+                instance_type,
+                label,
+                page,
+              }
+              notes {
+                id,
+                key,
+                value
+              }
+            }
+          }
+        }
+      }
+    }
+    HEREDOC
+  end
+
+  def search_params
+    params.permit(:utf8, :q, :format, :list_or_detail, :fuzzy_or_exact, :name_type, :limit)
+  end
+end
