@@ -1,3 +1,3 @@
 # frozen_string_literal: true
 
-DATA_SERVER = 'http://localhost:4004'.freeze
+DATA_SERVER = Rails.configuration.data_server
