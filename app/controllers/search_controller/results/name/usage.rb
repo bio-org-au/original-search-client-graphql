@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# Container for name usages in results
 class SearchController::Results::Name::Usage
   attr_reader :raw_usage
 

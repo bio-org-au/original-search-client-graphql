@@ -22,14 +22,17 @@ class SearchController < ApplicationController
     @show_details = false
     search
     respond_to do |format|
-      format.html { @results = Results.new(@search); render }
+      format.html do
+        @results = Results.new(@search)
+        render
+      end
       format.json { render json: @search }
       format.csv  { logger.debug('format.csv') }
     end
-    # rescue => e
-    #  logger.error("Search error #{e} for params: #{params.inspect}")
-    #  logger.error(@search.to_yaml)
-    #  render :error
+  rescue => e
+    logger.error("Search error #{e} for params: #{params.inspect}")
+    logger.error(@search.to_yaml)
+    render :error
   end
 
   private
@@ -37,21 +40,20 @@ class SearchController < ApplicationController
   def search
     @search = nil
     raise 'search error' if @search.present? && @search.data.nil?
-    if search_params['q'].present?
-      @search_term = search_params[:q].gsub(/ *$/, '')
-      @type_of_name = search_params[:name_type]
-      @fuzzy_or_exact = search_params[:fuzzy_or_exact]
-      @limit = search_params[:limit]
-      if search_params[:list_or_detail] == 'detail'
-        @show_details = true
-        request = "#{DATA_SERVER}/v1?query=#{detail_query}"
-      else
-        @show_details = false
-        request = "#{DATA_SERVER}/v1?query=#{list_query}"
-      end
-      json = HTTParty.get(request).to_json
-      @search = JSON.parse(json, object_class: OpenStruct)
+    return unless search_params['q'].present?
+    @search_term = search_params[:q].gsub(/ *$/, '')
+    @type_of_name = search_params[:name_type]
+    @fuzzy_or_exact = search_params[:fuzzy_or_exact]
+    @limit = search_params[:limit]
+    if search_params[:list_or_detail] == 'detail'
+      @show_details = true
+      request = "#{DATA_SERVER}/v1?query=#{detail_query}"
+    else
+      @show_details = false
+      request = "#{DATA_SERVER}/v1?query=#{list_query}"
     end
+    json = HTTParty.get(request).to_json
+    @search = JSON.parse(json, object_class: OpenStruct)
   end
 
   def list_query
@@ -59,7 +61,8 @@ class SearchController < ApplicationController
                   .delete("\n")
                   .sub(/search_term_placeholder/, URI.escape(@search_term))
                   .sub(/type_of_name_placeholder/, URI.escape(@type_of_name))
-                  .sub(/fuzzy_or_exact_placeholder/, URI.escape(@fuzzy_or_exact))
+                  .sub(/fuzzy_or_exact_placeholder/,
+                       URI.escape(@fuzzy_or_exact))
                   .sub(/"limit_placeholder"/, URI.escape(@limit))
   end
 
@@ -87,7 +90,8 @@ class SearchController < ApplicationController
                     .delete("\n")
                     .sub(/search_term_placeholder/, URI.escape(@search_term))
                     .sub(/type_of_name_placeholder/, URI.escape(@type_of_name))
-                    .sub(/fuzzy_or_exact_placeholder/, URI.escape(@fuzzy_or_exact))
+                    .sub(/fuzzy_or_exact_placeholder/,
+                         URI.escape(@fuzzy_or_exact))
                     .sub(/"limit_placeholder"/, URI.escape(@limit))
   end
 
@@ -146,6 +150,7 @@ class SearchController < ApplicationController
   end
 
   def search_params
-    params.permit(:utf8, :q, :format, :list_or_detail, :fuzzy_or_exact, :name_type, :limit)
+    params.permit(:utf8, :q, :format, :list_or_detail, :fuzzy_or_exact,
+                  :name_type, :limit)
   end
 end

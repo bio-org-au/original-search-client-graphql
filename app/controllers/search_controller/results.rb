@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# Container for search results
 class SearchController::Results
   def initialize(search)
     @search = search
@@ -21,11 +23,17 @@ class SearchController::Results
   end
 
   def present?
-    !(@search.nil? || @search.data.nil? || @search.data.name_search.nil? || @search.data.name_search.names.blank?)
+    !(@search.nil? ||
+      @search.data.nil? ||
+      @search.data.name_search.nil? ||
+      @search.data.name_search.names.blank?)
   end
 
   def blank?
-    @search.nil? || @search.data.nil? || @search.data.name_search.nil? || @search.data.name_search.names.blank?
+    @search.nil? ||
+      @search.data.nil? ||
+      @search.data.name_search.nil? ||
+      @search.data.name_search.names.blank?
   end
 
   def size

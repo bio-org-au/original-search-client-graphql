@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+
+# Container for names in results
 class SearchController::Results::Name
   def initialize(raw_name)
     @raw_name = raw_name
