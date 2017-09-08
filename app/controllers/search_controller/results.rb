@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class SearchController::Results
   def initialize(search)
     @search = search
@@ -5,7 +6,7 @@ class SearchController::Results
 
   def empty?
     @search.nil?
-  end 
+  end
 
   def no_data?
     @search.data.nil?
@@ -41,4 +42,3 @@ class SearchController::Results
     end
   end
 end
-

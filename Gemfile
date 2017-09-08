@@ -1,5 +1,5 @@
+# frozen_string_literal: true
 source 'https://rubygems.org'
-
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.9'
@@ -29,11 +29,10 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
-
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'httparty'
-#gem 'dish'
-#gem 'json-api-vanilla'
-gem "font-awesome-rails"
+# gem 'dish'
+# gem 'json-api-vanilla'
+gem 'font-awesome-rails'

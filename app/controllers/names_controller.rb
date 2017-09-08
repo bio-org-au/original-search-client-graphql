@@ -3,13 +3,13 @@
 # Controller
 class NamesController < ApplicationController
   def history
-    request = "#{DATA_SERVER}/v1?query=#{name_with_history_query(params['id']).gsub(/ /,'')}"
+    request = "#{DATA_SERVER}/v1?query=#{name_with_history_query(params['id']).delete(' ')}"
     json = HTTParty.get(request).to_json
     @history = JSON.parse(json, object_class: OpenStruct)
   end
 
   def old_history
-    request = "#{DATA_SERVER}/v1?query=#{history_query(params['id']).gsub(/ /,'')}"
+    request = "#{DATA_SERVER}/v1?query=#{history_query(params['id']).delete(' ')}"
     json = HTTParty.get(request).to_json
     @history = JSON.parse(json, object_class: OpenStruct)
   end

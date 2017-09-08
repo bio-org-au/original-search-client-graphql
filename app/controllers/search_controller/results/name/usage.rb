@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class SearchController::Results::Name::Usage
   attr_reader :raw_usage
 
@@ -11,11 +12,11 @@ class SearchController::Results::Name::Usage
   end
 
   def citation_for_misapplied
-    "#{@raw_usage.citation} [#{@raw_usage.instance_type_name}]" 
+    "#{@raw_usage.citation} [#{@raw_usage.instance_type_name}]"
   end
 
   def full_citation_with_page
-    "#{@raw_usage.citation}: #{@raw_usage.page || '-'} #{'[' + @raw_usage.instance_type_name+']' if @raw_usage.primary_instance}" 
+    "#{@raw_usage.citation}: #{@raw_usage.page || '-'} #{'[' + @raw_usage.instance_type_name + ']' if @raw_usage.primary_instance}"
   end
 
   def misapplied_to_name

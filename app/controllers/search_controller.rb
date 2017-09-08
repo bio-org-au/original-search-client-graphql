@@ -6,7 +6,7 @@
 # Run a search using the search term supplied
 # Trim trailing spaces from the search term
 # Form a request to the Graphql server
-# Modify the request based on form fields for: 
+# Modify the request based on form fields for:
 # - list/details (ToDo)
 # - auto wildcards/exact search (ToDo)
 # - output format (ToDo)
@@ -24,12 +24,12 @@ class SearchController < ApplicationController
     respond_to do |format|
       format.html { @results = Results.new(@search); render }
       format.json { render json: @search }
-      format.csv  { logger.debug("format.csv") }
+      format.csv  { logger.debug('format.csv') }
     end
-  #rescue => e
-  #  logger.error("Search error #{e} for params: #{params.inspect}")
-  #  logger.error(@search.to_yaml)
-  #  render :error
+    # rescue => e
+    #  logger.error("Search error #{e} for params: #{params.inspect}")
+    #  logger.error(@search.to_yaml)
+    #  render :error
   end
 
   private
@@ -42,7 +42,7 @@ class SearchController < ApplicationController
       @type_of_name = search_params[:name_type]
       @fuzzy_or_exact = search_params[:fuzzy_or_exact]
       @limit = search_params[:limit]
-      if search_params[:list_or_detail] == "detail"
+      if search_params[:list_or_detail] == 'detail'
         @show_details = true
         request = "#{DATA_SERVER}/v1?query=#{detail_query}"
       else
