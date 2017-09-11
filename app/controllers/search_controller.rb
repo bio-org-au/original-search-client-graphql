@@ -19,6 +19,10 @@
 # - on page
 class SearchController < ApplicationController
   def index
+    render plain: 'index'
+  end
+
+  def old_index
     @show_details = false
     search
     respond_to do |format|
