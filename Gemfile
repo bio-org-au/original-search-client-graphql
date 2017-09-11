@@ -37,3 +37,7 @@ gem 'httparty'
 # gem 'dish'
 # gem 'json-api-vanilla'
 gem 'font-awesome-rails'
+
+gem 'awesome_print'
+gem 'jruby-jars', '9.1.12.0'
+gem 'warbler'
