@@ -52,6 +52,7 @@ class SearchController < ApplicationController
                      else
                        "#{DATA_SERVER}/v1?query=#{list_query}"
                      end
+    logger.info("request_string: #{request_string}")
     json = HTTParty.get(request_string).to_json
     @search = JSON.parse(json, object_class: OpenStruct)
     present_results
