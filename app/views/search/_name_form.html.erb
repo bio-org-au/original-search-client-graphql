@@ -42,7 +42,10 @@
   </li>
   <li>
     <select name="format" title="Show the results in this form" class="form-field">
-      <%= options_for_select([['HTML', 'html',{title:"Show results as a web page here"}], ['CSV', 'csv',{title:"Show results as comma-separated data"}]], params[:format]) %>
+      <%= options_for_select([['HTML', 'html',{title:"Show results as a web page here"}],
+                              ['CSV', 'csv',{title:"Show results as comma-separated data"}],
+                              ['JSON', 'json',{title:"Show results as JSON"}]],
+                             params[:format]) %>
     </select>
   </li>
 </ul>

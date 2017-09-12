@@ -19,45 +19,57 @@
 # - on page
 class SearchController < ApplicationController
   def index
-    render plain: 'index'
-  end
-
-  def old_index
+    @search = nil
     @show_details = false
-    search
-    respond_to do |format|
-      format.html do
-        @results = Results.new(@search)
-        render
-      end
-      format.json { render json: @search }
-      format.csv  { logger.debug('format.csv') }
+    if search_params['q'].present?
+      search
+    else
+      no_search
     end
-  rescue => e
-    logger.error("Search error #{e} for params: #{params.inspect}")
-    logger.error(@search.to_yaml)
-    render :error
   end
 
   private
 
-  def search
-    @search = nil
-    raise 'search error' if @search.present? && @search.data.nil?
-    return unless search_params['q'].present?
+  def no_search
+    @results = nil
+    @search_term = nil
+    render :index
+  end
+
+  def review_params
     @search_term = search_params[:q].gsub(/ *$/, '')
     @type_of_name = search_params[:name_type]
     @fuzzy_or_exact = search_params[:fuzzy_or_exact]
     @limit = search_params[:limit]
-    if search_params[:list_or_detail] == 'detail'
-      @show_details = true
-      request = "#{DATA_SERVER}/v1?query=#{detail_query}"
-    else
-      @show_details = false
-      request = "#{DATA_SERVER}/v1?query=#{list_query}"
-    end
-    json = HTTParty.get(request).to_json
+    @show_details = search_params[:list_or_detail] == 'detail'
+    @list_only = !@show_details
+  end
+
+  def search
+    review_params
+    request_string = if @show_details
+                       "#{DATA_SERVER}/v1?query=#{detail_query}"
+                     else
+                       "#{DATA_SERVER}/v1?query=#{list_query}"
+                     end
+    json = HTTParty.get(request_string).to_json
     @search = JSON.parse(json, object_class: OpenStruct)
+    present_results
+  end
+
+  def present_results
+    respond_to do |format|
+      format.html { present_html }
+      format.json { render json: @search }
+    end
+  rescue => e
+    logger.error("Search error #{e} for params: #{params.inspect}")
+    render :error
+  end
+
+  def present_html
+    @results = Results.new(@search)
+    render :index
   end
 
   def list_query
