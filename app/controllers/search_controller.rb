@@ -33,7 +33,7 @@ class SearchController < ApplicationController
   def no_search
     @results = nil
     @search_term = nil
-    render :index
+    render :index, layout: "minimal"
   end
 
   def review_params
