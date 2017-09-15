@@ -22,7 +22,8 @@ class SearchController < ApplicationController
     @search = nil
     @show_details = false
     if search_params['q'].present?
-      search
+      #search
+      request_fred
     else
       no_search
     end
@@ -36,13 +37,16 @@ class SearchController < ApplicationController
     render :index, layout: "minimal"
   end
 
-  def review_params
-    @search_term = search_params[:q].gsub(/ *$/, '')
-    @type_of_name = search_params[:name_type]
-    @fuzzy_or_exact = search_params[:fuzzy_or_exact]
-    @limit = search_params[:limit]
-    @show_details = search_params[:list_or_detail] == 'detail'
-    @list_only = !@show_details
+  def request_fred
+    logger.info("request_fred")
+    request_string = "#{DATA_SERVER}/v1?query=fred"
+    logger.info("request_string: #{request_string}")
+    logger.info("partying")
+    json = HTTParty.get(request_string).to_json
+    logger.info("after partying... parsing....")
+    @search = JSON.parse(json, object_class: OpenStruct)
+    logger.info("after parsing.... about to present results")
+    present_results
   end
 
   def search
@@ -56,6 +60,15 @@ class SearchController < ApplicationController
     json = HTTParty.get(request_string).to_json
     @search = JSON.parse(json, object_class: OpenStruct)
     present_results
+  end
+
+  def review_params
+    @search_term = search_params[:q].gsub(/ *$/, '')
+    @type_of_name = search_params[:name_type]
+    @fuzzy_or_exact = search_params[:fuzzy_or_exact]
+    @limit = search_params[:limit]
+    @show_details = search_params[:list_or_detail] == 'detail'
+    @list_only = !@show_details
   end
 
   def present_results
