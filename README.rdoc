@@ -7,7 +7,7 @@
 
  This app was created with:
 
-   rails _4.2.9_ new search_server_graphql --database=jdbcpostgresql
+   rails _4.2.9_ new search_client_graphql -O
 
 * System dependencies
 
