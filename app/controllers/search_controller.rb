@@ -18,6 +18,8 @@
 # - in log
 # - on page
 class SearchController < ApplicationController
+  layout 'minimal'
+
   def index
     @search = nil
     @show_details = false
