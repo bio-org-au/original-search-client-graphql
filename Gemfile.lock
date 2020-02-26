@@ -76,7 +76,7 @@ GEM
     minitest (5.10.3)
     multi_json (1.12.1)
     multi_xml (0.6.0)
-    nokogiri (1.8.0-java)
+    nokogiri (1.10.8-java)
     rack (1.6.8)
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -163,6 +163,7 @@ DEPENDENCIES
   jbuilder (~> 2.0)
   jquery-rails
   jruby-jars (= 9.1.12.0)
+  nokogiri (>= 1.10.8)
   rails (= 4.2.9)
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
@@ -173,4 +174,4 @@ DEPENDENCIES
   warbler
 
 BUNDLED WITH
-   1.15.4
+   1.17.3
